@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Achás Portfolio
 
 A professional photography portfolio and content management system designed to showcase photography work, organize projects, and provide a platform for potential clients to make inquiries.
@@ -221,3 +222,7 @@ docs/PRD.md
 docs/ARCHITECTURE.md
     ↓
 "How are we building it?"
+=======
+# Achas-Portfolio
+Photography Portfolio
+>>>>>>> 54a40089f2400541a5350e5156a5d69ae82bf09a
