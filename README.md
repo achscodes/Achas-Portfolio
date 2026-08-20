@@ -1,36 +1,223 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Achás Portfolio
 
-## Getting Started
+A professional photography portfolio and content management system designed to showcase photography work, organize projects, and provide a platform for potential clients to make inquiries.
 
-First, run the development server:
+## Overview
 
-```bash
+Achás Portfolio is a full-stack web application built to serve as a centralized online portfolio.
+
+The platform consists of:
+
+- Public photography portfolio
+- Photography categories
+- Project galleries
+- About page
+- Contact and inquiry form
+- Private administrator dashboard
+- Photo management system
+- Project management
+- Featured photography management
+
+## Portfolio Categories
+
+The initial photography categories are:
+
+- All
+- Events
+- Portraits
+- Sports
+- Street Photography
+
+The category system is designed to be expandable in the future.
+
+## Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| Next.js | Web application framework |
+| React | User interface |
+| TypeScript | Programming language |
+| Tailwind CSS | Styling |
+| Supabase | Backend services |
+| PostgreSQL | Database |
+| Supabase Storage | Image storage |
+| Supabase Auth | Administrator authentication |
+| Vercel | Deployment |
+| Git | Version control |
+| GitHub | Source code repository |
+
+## Project Structure
+
+```text
+achas-portfolio/
+│
+├── app/
+│   ├── admin/
+│   ├── about/
+│   ├── contact/
+│   ├── portfolio/
+│   ├── projects/
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+│
+├── components/
+├── lib/
+├── types/
+├── public/
+│
+├── docs/
+│   ├── PRD.md
+│   └── ARCHITECTURE.md
+│
+├── README.md
+└── package.json
+
+Documentation
+
+Detailed project documentation can be found in the docs directory.
+
+Product Requirements Document
+
+See:
+
+docs/PRD.md
+
+The PRD contains:
+
+Product overview
+Product goals
+Target users
+Features
+Portfolio requirements
+Admin requirements
+MVP scope
+Future features
+System Architecture
+
+See:
+
+docs/ARCHITECTURE.md
+
+The architecture document contains:
+
+Technology stack
+Application architecture
+Project structure
+Database architecture
+Storage architecture
+Authentication
+Security
+Deployment architecture
+Getting Started
+1. Install dependencies
+npm install
+2. Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
+3. Build for production
+npm run build
+4. Start the production server
+npm start
+Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The project uses environment variables for Supabase configuration.
 
-## Learn More
+Create a file named:
 
-To learn more about Next.js, take a look at the following resources:
+.env.local
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Add:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-## Deploy on Vercel
+Do not commit .env.local to GitHub.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Development Workflow
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The general development workflow is:
+
+Develop
+   ↓
+Test Locally
+   ↓
+Git Add
+   ↓
+Git Commit
+   ↓
+Git Push
+   ↓
+GitHub
+   ↓
+Vercel
+Current Development Status
+Foundation
+ Next.js project created
+ TypeScript configured
+ Tailwind CSS configured
+ App Router configured
+ GitHub repository
+ Supabase project
+Public Website
+ Homepage
+ Portfolio
+ Category filtering
+ Photo viewer
+ Projects
+ About
+ Contact
+Admin CMS
+ Authentication
+ Dashboard
+ Photo upload
+ Photo management
+ Category management
+ Project management
+ Featured photography
+ Inquiry management
+Deployment
+ Vercel deployment
+ Production environment variables
+ Custom domain
+Project Documentation
+docs/
+├── PRD.md
+└── ARCHITECTURE.md
+
+These documents should be updated whenever major product or architectural decisions change.
+
+License
+
+This project is a personal portfolio project.
+
+Photography and other original creative works displayed through the portfolio remain the property of their respective creator.
+
+
+
+### One important thing
+
+
+Since we're still building the project, **don't worry about making the README perfect yet**.
+
+
+Think of the three files this way:
+
+
+```text
+README.md
+    ↓
+"How do I understand and run this project?"
+
+
+docs/PRD.md
+    ↓
+"What are we building?"
+
+
+docs/ARCHITECTURE.md
+    ↓
+"How are we building it?"
