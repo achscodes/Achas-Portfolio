@@ -2,35 +2,27 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import LogoutButton from "@/components/auth/LogoutButton";
+import BulkPhotoManager from "@/components/admin/BulkPhotoManager";
 
-type Category = {
-  name: string;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+type PageProps = {
+  searchParams: Promise<{
+    filter?: string;
+  }>;
 };
 
-type Photo = {
-  id: string;
-  title: string;
-  image_url: string | null;
-  status: string;
-  featured: boolean;
-  created_at: string;
-  category_id: string | null;
-  categories: Category | Category[] | null;
-};
-
-export default async function AdminPhotosPage() {
+export default async function AdminPhotosPage({ searchParams }: PageProps) {
+  const { filter = "all" } = await searchParams;
   const supabase = await createClient();
 
-  // Check authentication
-  const { data: authData, error: authError } =
-    await supabase.auth.getClaims();
-
+  const { data: authData, error: authError } = await supabase.auth.getClaims();
   if (authError || !authData) {
     redirect("/login");
   }
 
-  // Get photos from database
-  const { data: photosData, error: photosError } = await supabase
+  let query = supabase
     .from("photos")
     .select(`
       id,
@@ -40,157 +32,63 @@ export default async function AdminPhotosPage() {
       featured,
       created_at,
       category_id,
-      categories (
-        name
-      )
+      categories ( name )
     `)
     .order("created_at", { ascending: false });
 
-  if (photosError) {
-    console.error("Error loading photos:", photosError);
-  }
+  if (filter === "published") query = query.eq("status", "published");
+  else if (filter === "drafts") query = query.eq("status", "draft");
+  else if (filter === "featured") query = query.eq("featured", true);
 
-  const photos = (photosData ?? []) as Photo[];
+  const { data: photosData } = await query;
+  const photos = photosData ?? [];
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] px-6 py-12">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen bg-[#f8f7f4] flex flex-col md:flex-row">
+      <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-black/10 bg-white p-6 flex flex-col justify-between shrink-0">
+        <div>
+          <div className="flex items-center gap-3 px-2 py-3">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-xs font-bold text-white">N</span>
+            <div>
+              <p className="text-xs font-semibold tracking-wider uppercase">Achás Studio</p>
+              <p className="text-[11px] text-black/50">Admin Workspace</p>
+            </div>
+          </div>
+          <nav className="mt-8 space-y-1.5">
+            <Link href="/admin" className="flex items-center justify-between rounded-xl px-4 py-3 text-xs font-medium text-black/70 hover:bg-black/5">📊 Studio Overview</Link>
+            <Link href="/admin/photos" className="flex items-center justify-between rounded-xl bg-black px-4 py-3 text-xs font-medium text-white shadow-sm" style={{ color: '#ffffff' }}>🖼️ Photos Collection</Link>
+            <Link href="/admin/inquiries" className="flex items-center justify-between rounded-xl px-4 py-3 text-xs font-medium text-black/70 hover:bg-black/5">📬 Client Inquiries</Link>
+          </nav>
+        </div>
+        <div className="pt-6 border-t border-black/10 mt-6"><LogoutButton /></div>
+      </aside>
 
-        {/* Header */}
-        <div className="flex items-start justify-between gap-6">
-          <div>
-            <Link
-              href="/admin"
-              className="text-sm text-black/50 transition hover:text-black"
-            >
-              ← Back to Dashboard
+      <main className="flex-grow p-6 sm:p-10 lg:p-12 overflow-y-auto">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-black/50">Studio Management</p>
+              <h1 className="mt-2 text-3xl font-medium tracking-tight">Photos Gallery & Bulk Actions</h1>
+            </div>
+            <Link href="/admin/photos/new" className="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-xs font-medium text-white hover:bg-neutral-800 shadow-sm" style={{ color: '#ffffff' }}>
+              + Add New Photo
             </Link>
-
-            <p className="mt-8 text-xs uppercase tracking-[0.3em] text-black/50">
-              Achás Portfolio
-            </p>
-
-            <h1 className="mt-3 text-4xl font-medium">
-              Photos
-            </h1>
-
-            <p className="mt-3 text-black/60">
-              Manage your photography collection.
-            </p>
           </div>
 
-          <LogoutButton />
-        </div>
-
-        {/* Add Photo */}
-        <div className="mt-10">
-          <Link
-            href="/admin/photos/new"
-            className="inline-flex bg-black px-5 py-3 text-sm font-medium !text-white transition hover:bg-black/80"
-          >
-            + Add Photo
-          </Link>
-        </div>
-
-        {/* Error */}
-        {photosError && (
-          <div className="mt-8 border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-            Unable to load photos.
-          </div>
-        )}
-
-        {/* Photos */}
-        <div className="mt-10">
-          {photos.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {photos.map((photo) => (
-                <div
-                  key={photo.id}
-                  className="overflow-hidden border border-black/10 bg-white"
-                >
-                  {/* Photo Image */}
-                  <div className="aspect-[4/3] bg-black/5">
-                    {photo.image_url ? (
-                      <img
-                        src={photo.image_url}
-                        alt={photo.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-sm text-black/40">
-                        No image
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Photo Details */}
-                  <div className="p-5">
-                    <h2 className="font-medium">
-                      {photo.title}
-                    </h2>
-
-                    <p className="mt-1 text-sm text-black/50">
-                      {getCategoryName(photo.categories)}
-                    </p>
-
-                    <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs uppercase tracking-wider text-black/50">
-                        {photo.status}
-                      </span>
-
-                      {photo.featured && (
-                        <span className="text-xs uppercase tracking-wider text-black">
-                          Featured
-                        </span>
-                      )}
-                    </div>
-
-                    <Link
-                      href={`/admin/photos/${photo.id}`}
-                      className="text-sm font-medium underline underline-offset-4 transition hover:opacity-60"
-                    >
-                      Edit
-                    </Link>
-                  </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="border border-dashed border-black/20 bg-white p-12 text-center">
-              <h2 className="text-xl font-medium">
-                No photos yet
-              </h2>
-
-              <p className="mt-2 text-sm text-black/50">
-                Start building your portfolio by adding your first photo.
-              </p>
-
-              <Link
-                href="/admin/photos/new"
-                className="mt-6 inline-flex bg-black px-5 py-3 text-sm font-medium !text-white transition hover:bg-black/80"
-              >
-                Add Your First Photo
+          <div className="mt-8 flex flex-wrap items-center gap-2 border-b border-black/10 pb-4">
+            <span className="text-xs uppercase tracking-widest text-black/40 mr-2">Filter:</span>
+            {["all", "published", "drafts", "featured"].map((tab) => (
+              <Link key={tab} href={`/admin/photos?filter=${tab}`} className={`rounded-full px-4 py-2 text-xs font-medium capitalize ${filter === tab ? "bg-black text-white" : "bg-white border border-black/10 text-black/70 hover:bg-black/5"}`} style={filter === tab ? { color: '#ffffff' } : {}}>
+                {tab}
               </Link>
-            </div>
-          )}
+            ))}
+          </div>
+
+          <div className="mt-8">
+            <BulkPhotoManager photos={photos} />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
-}
-
-function getCategoryName(
-  categories: Category | Category[] | null | undefined
-): string {
-  if (!categories) {
-    return "Uncategorized";
-  }
-
-  if (Array.isArray(categories)) {
-    return categories[0]?.name ?? "Uncategorized";
-  }
-
-  return categories.name;
 }

@@ -35,3 +35,10 @@ button {
   background: #171717;
   color: #ffffff;
 }
+
+/* Force solid black backgrounds to always display bright white text */
+.bg-black,
+.bg-black:hover,
+.hover\:bg-black:hover {
+  color: #ffffff !important;
+}

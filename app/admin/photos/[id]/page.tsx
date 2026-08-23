@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import LogoutButton from "@/components/auth/LogoutButton";
+import { updatePhoto } from "../actions";
 
 type Category = {
   id: string;
@@ -77,10 +78,10 @@ export default async function EditPhotoPage({ params }: PageProps) {
         <div className="flex items-start justify-between gap-6">
           <div>
             <Link
-              href="/admin/photos"
+              href="/admin"
               className="text-sm text-black/50 transition hover:text-black"
             >
-              ← Back to Photos
+              ← Back to Admin Dashboard
             </Link>
 
             <p className="mt-8 text-xs uppercase tracking-[0.3em] text-black/50">
@@ -123,8 +124,14 @@ export default async function EditPhotoPage({ params }: PageProps) {
 
           {/* Edit Form */}
           <div className="border border-black/10 bg-white p-6">
-            <form className="space-y-6">
+            <form action={updatePhoto} className="space-y-6">
 
+              <input
+                  type="hidden"
+                  name="id"
+                  value={photo.id}
+              /> 
+  
               {/* Title */}
               <div>
                 <label
@@ -222,12 +229,13 @@ export default async function EditPhotoPage({ params }: PageProps) {
                 <button
                   type="submit"
                   className="bg-black px-5 py-3 text-sm font-medium !text-white transition hover:bg-black/80"
+                  style={{ color: '#ffffff' }}
                 >
                   Save Changes
                 </button>
 
                 <Link
-                  href="/admin/photos"
+                  href="/admin"
                   className="border border-black/15 px-5 py-3 text-sm font-medium transition hover:bg-black/5"
                 >
                   Cancel

@@ -1,16 +1,19 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
 import { Photo } from "@/types/photo";
 
 interface PhotoCardProps {
   photo: Photo;
+  onSelect: (photo: Photo) => void;
 }
 
-export default function PhotoCard({ photo }: PhotoCardProps) {
+export default function PhotoCard({ photo, onSelect }: PhotoCardProps) {
   return (
-    <Link
-      href={`/portfolio/${photo.id}`}
-      className="group block break-inside-avoid"
+    <button
+      type="button"
+      onClick={() => onSelect(photo)}
+      className="group block w-full text-left break-inside-avoid cursor-pointer"
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-black/5">
         <Image
@@ -26,6 +29,6 @@ export default function PhotoCard({ photo }: PhotoCardProps) {
           <p className="mt-1 text-xs text-white/70">{photo.category}</p>
         </div>
       </div>
-    </Link>
+    </button>
   );
 }

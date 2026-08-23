@@ -5,7 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { projects } from "@/lib/data/project";
 
 export const metadata = {
-  title: "Projects | Achás",
+  title: "Projects | Achas",
   description: "Selected photography projects and collections.",
 };
 

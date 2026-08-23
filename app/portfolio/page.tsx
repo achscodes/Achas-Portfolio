@@ -1,7 +1,8 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PortfolioGallery from "@/components/gallery/PorfolioGallery";
-import { photos } from "@/lib/data/photos";
+import { createClient } from "@/lib/supabase/server";
+import { PhotoCategory } from "@/types/photo";
 
 export const metadata = {
   title: "Portfolio | Achás",
@@ -9,10 +10,57 @@ export const metadata = {
     "Explore the photography portfolio including events, portraits, sports, and street photography.",
 };
 
-export default function PortfolioPage() {
-  const publishedPhotos = photos.filter(
-    (photo) => photo.status === "published"
-  );
+// Force dynamic rendering so newly published photos appear instantly
+export const dynamic = "force-dynamic";
+
+export default async function PortfolioPage() {
+  const supabase = await createClient();
+
+  // Fetch published photos from Supabase along with their category name
+  const { data: rawPhotos, error } = await supabase
+    .from("photos")
+    .select(`
+      id,
+      title,
+      image_url,
+      status,
+      featured,
+      created_at,
+      category_id,
+      categories (
+        id,
+        name
+      )
+    `)
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching published photos:", error.message);
+  }
+
+  // Map Supabase fields to match the Photo type expected by PortfolioGallery
+  const publishedPhotos = (rawPhotos || []).map((photo: any) => {
+    let categoryName: PhotoCategory = "Events";
+    const cat = photo.categories;
+    
+    if (cat) {
+      const name = Array.isArray(cat) ? cat[0]?.name : cat?.name;
+      if (name) {
+        categoryName = name as PhotoCategory;
+      }
+    }
+
+    return {
+      id: photo.id,
+      title: photo.title,
+      imageUrl: photo.image_url || "",
+      category: categoryName,
+      status: photo.status,
+      featured: photo.featured,
+      createdAt: photo.created_at,
+    };
+  });
 
   return (
     <div className="min-h-screen">
