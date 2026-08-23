@@ -1,111 +1,136 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ContactForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const supabase = createClient();
 
-    setSubmitted(true);
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error: dbError } = await supabase.from("inquiries").insert({
+        name,
+        email,
+        subject,
+        message,
+        status: "active",
+      });
+
+      if (dbError) throw dbError;
+
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, subject, message }),
+      });
+
+      setSubmitted(true);
+    } catch (err: any) {
+      alert(`Error submitting inquiry: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (submitted) {
     return (
-      <div className="border border-black/10 p-8">
-        <h2 className="text-xl font-medium">Message received.</h2>
-
-        <p className="mt-3 text-sm leading-6 text-black/55">
-          Thank you for reaching out. Your message has been submitted.
+      <div className="w-full max-w-xl mx-auto p-6 sm:p-12 bg-white border border-black/10 rounded-3xl text-center shadow-xs">
+        <h3 className="text-lg sm:text-xl font-medium mb-2">Inquiry Sent Successfully!</h3>
+        <p className="text-xs sm:text-sm text-black/60 mb-6">
+          Thank you, {name}. We have received your message and will get back to you shortly.
         </p>
-
         <button
-          type="button"
-          onClick={() => setSubmitted(false)}
-          className="mt-6 text-sm font-medium underline underline-offset-4"
+          onClick={() => {
+            setSubmitted(false);
+            setName("");
+            setEmail("");
+            setSubject("");
+            setMessage("");
+          }}
+          className="w-full sm:w-auto rounded-full bg-black px-6 py-3 text-xs uppercase tracking-widest text-white hover:bg-neutral-800 transition cursor-pointer"
+          style={{ color: "#ffffff" }}
         >
-          Send another message
+          Send Another Inquiry
         </button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto p-5 sm:p-8 bg-white border border-black/10 rounded-3xl space-y-5 shadow-xs">
       <div>
-        <label htmlFor="name" className="mb-2 block text-sm font-medium">
-          Name
-        </label>
+        <h2 className="text-xl font-medium">Start a Project</h2>
+        <p className="text-xs text-black/60 uppercase tracking-widest mt-1">
+          Fill out the form below to send an inquiry
+        </p>
+      </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs uppercase tracking-widest text-black/70 mb-2">Your Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="John Doe"
+            className="w-full rounded-2xl border border-black/15 bg-neutral-50 px-4 py-3.5 text-sm outline-none focus:border-black text-black"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-xs uppercase tracking-widest text-black/70 mb-2">Email Address</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="john@example.com"
+            className="w-full rounded-2xl border border-black/15 bg-neutral-50 px-4 py-3.5 text-sm outline-none focus:border-black text-black"
+            required
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs uppercase tracking-widest text-black/70 mb-2">Project Type / Subject</label>
         <input
-          id="name"
-          name="name"
           type="text"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          placeholder="Graduation Photoshoot, Portrait..."
+          className="w-full rounded-2xl border border-black/15 bg-neutral-50 px-4 py-3.5 text-sm outline-none focus:border-black text-black"
           required
-          className="w-full border border-black/15 bg-transparent px-4 py-3 outline-none transition focus:border-black"
-          placeholder="Your name"
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="mb-2 block text-sm font-medium">
-          Email
-        </label>
-
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          className="w-full border border-black/15 bg-transparent px-4 py-3 outline-none transition focus:border-black"
-          placeholder="you@example.com"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="projectType"
-          className="mb-2 block text-sm font-medium"
-        >
-          Project Type
-        </label>
-
-        <select
-          id="projectType"
-          name="projectType"
-          required
-          className="w-full border border-black/15 bg-[#f8f7f4] px-4 py-3 outline-none focus:border-black"
-        >
-          <option value="">Select a project type</option>
-          <option value="event">Event</option>
-          <option value="portrait">Portrait</option>
-          <option value="sports">Sports</option>
-          <option value="creative">Street / Creative</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="message" className="mb-2 block text-sm font-medium">
-          Message
-        </label>
-
+        <label className="block text-xs uppercase tracking-widest text-black/70 mb-2">Message</label>
         <textarea
-          id="message"
-          name="message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Tell us about your vision..."
+          rows={4}
+          className="w-full rounded-2xl border border-black/15 bg-neutral-50 px-4 py-3.5 text-sm outline-none focus:border-black text-black resize-none"
           required
-          rows={6}
-          className="w-full resize-none border border-black/15 bg-transparent px-4 py-3 outline-none transition focus:border-black"
-          placeholder="Tell me about your project..."
         />
       </div>
 
       <button
         type="submit"
-        className="rounded-full bg-black px-7 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.02]"
+        disabled={loading}
+        className="w-full rounded-full bg-black py-4 text-xs uppercase tracking-widest text-white hover:bg-neutral-800 disabled:opacity-50 transition cursor-pointer shadow-sm"
+        style={{ color: "#ffffff" }}
       >
-        Send Inquiry
+        {loading ? "Sending Inquiry..." : "Submit Inquiry →"}
       </button>
     </form>
   );

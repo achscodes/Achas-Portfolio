@@ -70,21 +70,21 @@ export default async function AdminOverviewPage() {
               className="flex items-center justify-between rounded-xl bg-black px-4 py-3 text-xs font-medium text-white transition-all shadow-sm"
               style={{ color: '#ffffff' }}
             >
-              <span>📊 Studio Overview</span>
+              <span>Studio Overview</span>
             </Link>
 
             <Link
               href="/admin/photos"
               className="flex items-center justify-between rounded-xl px-4 py-3 text-xs font-medium text-black/70 transition-all hover:bg-black/5 hover:text-black"
             >
-              <span>🖼️ Photos Collection</span>
+              <span>Photos Collection</span>
             </Link>
 
             <Link
               href="/admin/inquiries"
               className="flex items-center justify-between rounded-xl px-4 py-3 text-xs font-medium text-black/70 transition-all hover:bg-black/5 hover:text-black"
             >
-              <span>📬 Client Inquiries</span>
+              <span>Client Inquiries</span>
               {totalInquiriesCount ? (
                 <span className="rounded-full bg-black/10 px-2 py-0.5 text-[10px] font-bold text-black">
                   {totalInquiriesCount}
@@ -97,7 +97,7 @@ export default async function AdminOverviewPage() {
               target="_blank"
               className="flex items-center justify-between rounded-xl px-4 py-3 text-xs font-medium text-black/70 transition-all hover:bg-black/5 hover:text-black"
             >
-              <span>🌐 View Live Site ↗</span>
+              <span>View Live Site ↗</span>
             </Link>
           </nav>
         </div>

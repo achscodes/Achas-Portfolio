@@ -48,9 +48,9 @@ export default async function AdminPhotosPage({ searchParams }: PageProps) {
       <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-black/10 bg-white p-6 flex flex-col justify-between shrink-0">
         <div>
           <div className="flex items-center gap-3 px-2 py-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-xs font-bold text-white">N</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-xs font-bold text-white">C</span>
             <div>
-              <p className="text-xs font-semibold tracking-wider uppercase">Achás Studio</p>
+              <p className="text-xs font-semibold tracking-wider uppercase">chas.arw</p>
               <p className="text-[11px] text-black/50">Admin Workspace</p>
             </div>
           </div>
@@ -70,9 +70,23 @@ export default async function AdminPhotosPage({ searchParams }: PageProps) {
               <p className="text-xs uppercase tracking-[0.3em] text-black/50">Studio Management</p>
               <h1 className="mt-2 text-3xl font-medium tracking-tight">Photos Gallery & Bulk Actions</h1>
             </div>
-            <Link href="/admin/photos/new" className="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-xs font-medium text-white hover:bg-neutral-800 shadow-sm" style={{ color: '#ffffff' }}>
-              + Add New Photo
-            </Link>
+            
+            <div className="flex items-center gap-3">
+              <Link 
+                href="/admin/photos/bulk" 
+                className="inline-flex items-center gap-2 rounded-full border border-black/15 bg-white px-6 py-3 text-xs font-medium text-black hover:bg-black/5 transition-colors shadow-sm"
+              >
+                + Bulk Upload
+              </Link>
+
+              <Link 
+                href="/admin/photos/new" 
+                className="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-xs font-medium text-white hover:bg-neutral-800 shadow-sm" 
+                style={{ color: '#ffffff' }}
+              >
+                + Add New Photo
+              </Link>
+            </div>
           </div>
 
           <div className="mt-8 flex flex-wrap items-center gap-2 border-b border-black/10 pb-4">

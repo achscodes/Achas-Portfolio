@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { Photo } from "@/types/photo";
 
@@ -10,25 +8,30 @@ interface PhotoCardProps {
 
 export default function PhotoCard({ photo, onSelect }: PhotoCardProps) {
   return (
-    <button
-      type="button"
+    <div
       onClick={() => onSelect(photo)}
-      className="group block w-full text-left break-inside-avoid cursor-pointer"
+      className="group relative cursor-pointer overflow-hidden rounded-2xl bg-neutral-100 border border-black/10 transition-all hover:shadow-md break-inside-avoid"
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-black/5">
-        <Image
+      {/* 
+        By removing fixed heights and using w-full h-auto, 
+        the image respects its original portrait or landscape dimensions. 
+      */}
+      <div className="relative w-full">
+        <img
           src={photo.imageUrl}
           alt={photo.title}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition duration-700 group-hover:scale-105"
+          className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
         />
+      </div>
 
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-5 pt-16 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <p className="text-sm font-medium text-white">{photo.title}</p>
-          <p className="mt-1 text-xs text-white/70">{photo.category}</p>
+      {/* Subtle Hover Details Overlay */}
+      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between">
+        <div>
+          <h3 className="text-xs font-medium text-white tracking-wide">{photo.title}</h3>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-white/70">{photo.category}</p>
         </div>
       </div>
-    </button>
+    </div>
   );
 }
